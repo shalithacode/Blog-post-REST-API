@@ -1,43 +1,40 @@
 const { validationResult } = require("express-validator");
-
+const Post = require("../models/post");
 exports.getPosts = (req, res, next) => {
-  return res.status(200).json({
-    posts: [
-      {
-        _id: "1",
-        title: "first post",
-        content: "This is the first content of the post",
-        imageUrl: "images/duck.jpg",
-        creator: {
-          author: "Max",
-        },
-        createdAt: new Date(),
-      },
-    ],
-  });
+  Post.find()
+    .then((result) => {
+      return res.status(200).json({
+        posts: result,
+      });
+    })
+    .catch((e) => console.log(e));
 };
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
-  if (!error.isEmpty())
+  if (!errors.isEmpty())
     return res.status(422).json({
       message: "Validation was failed, Entered data incorrect!",
       errors: errors.array(),
     });
 
   const title = req.body.title;
+  const imageUrl = "images/duck.jpg";
   const content = req.body.content;
+  const creator = { author: "Max" };
 
-  res.status(201).json({
-    message: "Post was created sucessfuly",
-    post: {
-      _id: new Date().toISOString(),
-      title: title,
-      content: content,
-      imageUrl: "images/duck.jpg",
-      creator: {
-        author: "Max",
-      },
-      createdAt: new Date(),
-    },
+  const post = new Post({
+    title: title,
+    content: content,
+    imageUrl: imageUrl,
+    creator: creator,
   });
+  post
+    .save()
+    .then((result) => {
+      res.status(201).json({
+        message: "Post was created sucessfuly",
+        post: result,
+      });
+    })
+    .catch((e) => console.log(e));
 };
