@@ -3,12 +3,37 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const bodyParser = require("body-parser");
+const multer = require("multer");
+const { v4: uuidv4 } = require("uuid");
+
 const MONGODB_URI = `mongodb+srv://${process.env.MONOGDB_USER}:${process.env.MONOGDB_PASSWORD}@node-cluster.dkal6pa.mongodb.net/blog?retryWrites=true&w=majority`;
 
 const app = express();
-app.use("/images", express.static(path.join(__dirname, "images")));
-app.use(bodyParser.json());
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, uuidv4());
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+app.use("/images", express.static(path.join(__dirname, "images")));
+app.use(bodyParser.json()); // application/json
+app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
 const feedRoutes = require("./routes/feed");
 
 app.use((req, res, next) => {
