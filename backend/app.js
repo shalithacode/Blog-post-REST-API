@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const MONGODB_URI = `mongodb+srv://${process.env.MONOGDB_USER}:${process.env.MONOGDB_PASSWORD}@node-cluster.dkal6pa.mongodb.net/blog?retryWrites=true&w=majority`;
 
 const app = express();
-app.use(express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(bodyParser.json());
 
 const feedRoutes = require("./routes/feed");
