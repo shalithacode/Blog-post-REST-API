@@ -8,15 +8,22 @@ const clearImage = (filePath) => {
   fs.unlink(filePath, (err) => console.log(err));
 };
 exports.getPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
+
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then((result) => {
-      if (!result) {
-        const error = new Error("Could not find posts.");
-        error.statusCode = 404;
-        throw error;
-      }
       return res.status(200).json({
         posts: result,
+        totalItems: totalItems,
       });
     })
     .catch((err) => {
