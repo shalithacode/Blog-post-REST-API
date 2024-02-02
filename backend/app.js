@@ -35,6 +35,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(bodyParser.json()); // application/json
 app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -47,6 +48,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
+
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
