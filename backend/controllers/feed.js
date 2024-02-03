@@ -71,7 +71,7 @@ exports.createPost = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.file.path.replace("\\", "/");
   const content = req.body.content;
-  const creator = { author: "Max" };
+  const creator = req.userId;
 
   const post = new Post({
     title: title,
